@@ -20,4 +20,4 @@ Input data would be parsed line-by-line, and output data would be just printed o
 
 # Solutions
 
-* [Day1](https://github.com/hashedone/advent-of-code-2019-rust/backlog/day1.md)
+* [Day1](backlog/day1.md)
