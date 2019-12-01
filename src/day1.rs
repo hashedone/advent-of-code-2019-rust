@@ -1,5 +1,5 @@
 use async_std::prelude::*;
-use async_std::stream::IntoStream;
+use async_std::stream::Stream;
 use std::iter::successors;
 
 fn for_mass(mass: i64) -> i64 {
@@ -7,12 +7,12 @@ fn for_mass(mass: i64) -> i64 {
 }
 
 #[allow(unused)]
-pub async fn simplified(input: impl IntoStream<Item = i64>) -> i64 {
-    input.into_stream().map(for_mass).sum().await
+pub async fn simplified(input: impl Stream<Item = i64>) -> i64 {
+    input.map(for_mass).sum().await
 }
 
 #[allow(unused)]
-pub async fn extended(input: impl IntoStream<Item = i64>) -> i64 {
+pub async fn extended(input: impl Stream<Item = i64>) -> i64 {
     let partials = |mass| {
         successors(Some(mass), |mass| Some(for_mass(*mass)))
             .skip(1)
@@ -20,7 +20,7 @@ pub async fn extended(input: impl IntoStream<Item = i64>) -> i64 {
             .sum()
     };
 
-    input.into_stream().map(partials).sum().await
+    input.map(partials).sum().await
 }
 
 #[cfg(test)]
