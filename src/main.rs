@@ -2,10 +2,14 @@ use async_std;
 use async_std::io::{stdin, BufReader};
 use async_std::prelude::*;
 
-#[cfg(feature = "day1")]
 mod day1;
 #[cfg(feature = "day1")]
 use day1 as day;
+
+#[cfg(feature = "day2")]
+mod day2;
+#[cfg(feature = "day2")]
+use day2 as day;
 
 #[cfg(not(feature = "basic"))]
 use day::extended as solution;
