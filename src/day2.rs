@@ -70,10 +70,10 @@ mod tests {
     use super::interpret;
 
     #[test]
-    fn interpret() {
+    fn interpret_test() {
         assert_eq!(
             3500,
-            interpret_simplified(vec![1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50])
+            interpret(vec![1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50])
         );
         assert_eq!(2, interpret(vec![1, 0, 0, 0, 99]));
         assert_eq!(2, interpret(vec![2, 3, 0, 3, 99]));

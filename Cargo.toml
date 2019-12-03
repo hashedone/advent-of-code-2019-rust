@@ -10,7 +10,8 @@ edition = "2018"
 async-std = { version="1.2", features=["unstable", "attributes"] }
 
 [features]
-default = ["day2"]
+default = ["day3"]
 day1 = []
 day2 = []
+day3 = []
 basic = []
