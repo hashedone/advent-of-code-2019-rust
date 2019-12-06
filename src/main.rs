@@ -19,7 +19,12 @@ mod day4;
 use day4 as day;
 
 mod day5;
+#[cfg(feature = "day5")]
 use day5 as day;
+
+mod day6;
+#[cfg(feature = "day6")]
+use day6 as day;
 
 #[cfg(not(feature = "basic"))]
 use day::extended as solution;
