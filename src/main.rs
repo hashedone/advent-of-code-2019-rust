@@ -1,6 +1,7 @@
 use async_std;
 use async_std::io::{stdin, BufReader};
 use async_std::prelude::*;
+use tokio;
 
 mod intcode;
 
@@ -37,7 +38,7 @@ use day::extended as solution;
 #[cfg(feature = "basic")]
 use day::simplified as solution;
 
-#[async_std::main]
+#[tokio::main]
 async fn main() {
     let input = BufReader::new(stdin())
         .lines()
