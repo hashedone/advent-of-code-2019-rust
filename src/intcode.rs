@@ -1,6 +1,7 @@
 use async_std;
 use async_std::prelude::*;
 use async_std::stream::Stream;
+use async_stream::stream;
 
 #[derive(Debug)]
 enum Op {
@@ -29,42 +30,49 @@ impl Op {
         }
     }
 
-    async fn perform<S: Stream<Item = String> + Unpin>(
+    // Returns:
+    // (new_pc, output_val)
+    // For non jump instructions returned `new_pc` should be `None`
+    // For non output instructions returned `output_val` should be `None`
+    async fn perform<S: Stream<Item = i64> + Unpin>(
         &self,
         args: &[Argument],
         memory: &mut [i64],
         input: &mut S,
-    ) -> Option<usize> {
+    ) -> (Option<usize>, Option<i64>) {
         match self {
             Self::Add => {
                 args[2].set(memory, args[0].get(memory) + args[1].get(memory));
-                None
+                (None, None)
             }
             Self::Mul => {
                 args[2].set(memory, args[0].get(memory) * args[1].get(memory));
-                None
+                (None, None)
             }
             Self::Read => {
-                args[0].set(memory, input.next().await.unwrap().parse().unwrap());
-                None
+                let readed = input.next().await.unwrap();
+                args[0].set(memory, readed);
+                (None, None)
             }
             Self::Write => {
-                async_std::println!("{}", args[0].get(memory)).await;
-                None
+                let writting = args[0].get(memory);
+                (None, Some(writting))
             }
             Self::JmpT => {
-                if args[0].get(memory) != 0 {
+                let new_pc = if args[0].get(memory) != 0 {
                     Some(args[1].get(memory) as usize)
                 } else {
                     None
-                }
+                };
+                (new_pc, None)
             }
             Self::JmpF => {
-                if args[0].get(memory) == 0 {
+                let new_pc = if args[0].get(memory) == 0 {
                     Some(args[1].get(memory) as usize)
                 } else {
                     None
-                }
+                };
+                (new_pc, None)
             }
             Self::Less => {
                 if args[0].get(memory) < args[1].get(memory) {
@@ -72,7 +80,7 @@ impl Op {
                 } else {
                     args[2].set(memory, 0);
                 }
-                None
+                (None, None)
             }
             Self::Equal => {
                 if args[0].get(memory) == args[1].get(memory) {
@@ -80,7 +88,7 @@ impl Op {
                 } else {
                     args[2].set(memory, 0);
                 }
-                None
+                (None, None)
             }
         }
     }
@@ -116,13 +124,14 @@ impl Argument {
     }
 }
 
-// Returns offset to next instruction or None
-// for stop execution
-async fn handle_opcode<S: Stream<Item = String> + Unpin>(
+// Returns (output_val, new_pc)
+// For termination opcode, returned value should be `None`
+// For non output opcodes, returned `output_val` should be None
+async fn handle_opcode<S: Stream<Item = i64> + Unpin>(
     pc: usize,
     memory: &mut [i64],
     input: &mut S,
-) -> Option<usize> {
+) -> Option<(Option<i64>, usize)> {
     let mut opcode = memory[pc];
 
     if opcode == 99 {
@@ -145,35 +154,24 @@ async fn handle_opcode<S: Stream<Item = String> + Unpin>(
         opcode /= 10;
     }
 
-    Some(
-        op.perform(&args, memory, input)
-            .await
-            .unwrap_or_else(|| pc + op.args() + 1),
+    let (new_pc, output_val) = op.perform(&args, memory, input).await;
+    let new_pc = new_pc.unwrap_or_else(|| pc + op.args() + 1);
+    Some((output_val, new_pc))
+}
+
+pub fn interpret<S: Stream<Item = i64> + Unpin>(
+    program: Vec<i64>,
+    input: S,
+) -> impl Stream<Item = i64> {
+    stream!(
+        let mut program = program;
+        let mut input = input;
+        let mut pc = 0;
+
+        while let Some((output, new_pc)) = handle_opcode(pc, &mut program, &mut input).await {
+            yield output;
+            pc = new_pc;
+        }
     )
+    .filter_map(std::convert::identity)
 }
-
-async fn interpret<S: Stream<Item = String> + Unpin>(mut program: Vec<i64>, input: &mut S) -> i64 {
-    let mut pc = Some(0);
-    while let Some(p) = pc {
-        pc = handle_opcode(p, &mut program, input).await
-    }
-    program[0]
-}
-
-async fn parse_program<S: Stream<Item = String> + Unpin>(input: &mut S) -> Vec<i64> {
-    input
-        .next()
-        .await
-        .unwrap()
-        .split(',')
-        .map(str::parse::<i64>)
-        .filter_map(Result::ok)
-        .collect::<Vec<_>>()
-}
-
-#[allow(unused)]
-pub async fn simplified<S: Stream<Item = String> + Unpin>(mut input: S) {
-    let mut program = parse_program(&mut input).await;
-    interpret(program, &mut input).await;
-}
-

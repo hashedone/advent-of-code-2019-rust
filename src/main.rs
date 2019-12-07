@@ -2,6 +2,8 @@ use async_std;
 use async_std::io::{stdin, BufReader};
 use async_std::prelude::*;
 
+mod intcode;
+
 mod day1;
 #[cfg(feature = "day1")]
 use day1 as day;
@@ -25,6 +27,10 @@ use day5 as day;
 mod day6;
 #[cfg(feature = "day6")]
 use day6 as day;
+
+mod day7;
+#[cfg(feature = "day7")]
+use day7 as day;
 
 #[cfg(not(feature = "basic"))]
 use day::extended as solution;

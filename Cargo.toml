@@ -8,13 +8,17 @@ edition = "2018"
 
 [dependencies]
 async-std = { version="1.2", features=["unstable", "attributes"] }
+async-stream = "0.2"
+futures = "0.3"
+permute = "0.1"
 
 [features]
-default = ["day6"]
+default = ["day7"]
 day1 = []
 day2 = []
 day3 = []
 day4 = []
 day5 = []
 day6 = []
+day7 = []
 basic = []
