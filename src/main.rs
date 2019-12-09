@@ -37,6 +37,10 @@ mod day8;
 #[cfg(feature = "day8")]
 use day8 as day;
 
+mod day9;
+#[cfg(feature = "day9")]
+use day9 as day;
+
 #[cfg(not(feature = "basic"))]
 use day::extended as solution;
 #[cfg(feature = "basic")]
@@ -47,5 +51,5 @@ async fn main() {
     let input = BufReader::new(stdin())
         .lines()
         .filter_map(|l| l.ok()?.parse().ok());
-    println!("{}", solution(input).await)
+    println!("{:?}", solution(input).await)
 }

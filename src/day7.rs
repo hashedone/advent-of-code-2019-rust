@@ -10,23 +10,23 @@ use permute::permutations_of;
 
 use crate::intcode::interpret;
 
-async fn parse_program<S: Stream<Item = String> + Unpin>(input: &mut S) -> Vec<i64> {
+async fn parse_program<S: Stream<Item = String> + Unpin>(input: &mut S) -> Vec<i128> {
     input
         .next()
         .await
         .unwrap()
         .split(',')
-        .map(str::parse::<i64>)
+        .map(str::parse::<i128>)
         .filter_map(Result::ok)
         .collect::<Vec<_>>()
 }
 
 #[allow(unused)]
-pub async fn simplified<S: Stream<Item = String> + Unpin>(mut input: S) -> i64 {
+pub async fn simplified<S: Stream<Item = String> + Unpin>(mut input: S) -> i128 {
     let program = parse_program(&mut input).await;
 
     let results = permutations_of(&[0, 1, 2, 3, 4]).map(|phases| {
-        let init: Pin<Box<dyn Stream<Item = i64>>> = Box::pin(stream::once(0));
+        let init: Pin<Box<dyn Stream<Item = i128>>> = Box::pin(stream::once(0));
 
         let mut output = phases.fold(init, |input, phase| {
             let input = stream::once(*phase).chain(input);
@@ -45,7 +45,7 @@ pub async fn simplified<S: Stream<Item = String> + Unpin>(mut input: S) -> i64 {
 }
 
 #[allow(unused)]
-pub async fn extended<S: Stream<Item = String> + Unpin>(mut input: S) -> i64 {
+pub async fn extended<S: Stream<Item = String> + Unpin>(mut input: S) -> i128 {
     let program = parse_program(&mut input).await;
 
     let results = permutations_of(&[5, 6, 7, 8, 9]).map(|phases| {
