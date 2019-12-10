@@ -14,7 +14,7 @@ permute = "0.1"
 tokio = { version = "0.2", features=["macros"] }
 
 [features]
-default = ["day9"]
+default = ["day10"]
 day1 = []
 day2 = []
 day3 = []
@@ -24,4 +24,5 @@ day6 = []
 day7 = []
 day8 = []
 day9 = []
+day10 = []
 basic = []
