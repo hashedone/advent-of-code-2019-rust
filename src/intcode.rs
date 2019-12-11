@@ -211,3 +211,15 @@ pub fn interpret<S: Stream<Item = i128> + Unpin>(
     )
     .filter_map(std::convert::identity)
 }
+
+pub async fn parse_program<S: Stream<Item = String> + Unpin>(input: &mut S) -> Vec<i128> {
+    input
+        .next()
+        .await
+        .unwrap()
+        .split(',')
+        .map(str::parse::<i128>)
+        .filter_map(Result::ok)
+        .collect::<Vec<_>>()
+}
+

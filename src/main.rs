@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 use async_std;
 use async_std::io::{stdin, BufReader};
 use async_std::prelude::*;
@@ -44,6 +46,10 @@ use day9 as day;
 mod day10;
 #[cfg(feature = "day10")]
 use day10 as day;
+
+mod day11;
+#[cfg(feature = "day11")]
+use day11 as day;
 
 #[cfg(not(feature = "basic"))]
 use day::extended as solution;

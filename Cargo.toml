@@ -9,12 +9,13 @@ edition = "2018"
 [dependencies]
 async-std = { version="1.2", features=["unstable", "attributes"] }
 async-stream = "0.2"
+futures-util = "0.3"
 futures = "0.3"
 permute = "0.1"
 tokio = { version = "0.2", features=["macros"] }
 
 [features]
-default = ["day10"]
+default = ["day11"]
 day1 = []
 day2 = []
 day3 = []
@@ -25,4 +26,5 @@ day7 = []
 day8 = []
 day9 = []
 day10 = []
+day11 = []
 basic = []
