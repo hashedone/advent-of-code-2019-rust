@@ -13,9 +13,10 @@ futures-util = "0.3"
 futures = "0.3"
 permute = "0.1"
 tokio = { version = "0.2", features=["macros"] }
+nom = "5"
 
 [features]
-default = ["day11"]
+default = ["day12"]
 day1 = []
 day2 = []
 day3 = []
@@ -27,4 +28,5 @@ day8 = []
 day9 = []
 day10 = []
 day11 = []
+day12 = []
 basic = []
