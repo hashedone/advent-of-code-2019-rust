@@ -14,9 +14,10 @@ futures = "0.3"
 permute = "0.1"
 tokio = { version = "0.2", features=["macros"] }
 nom = "5"
+pancurses = { version = "0.16", optional = true }
 
 [features]
-default = ["day12"]
+default = ["day13", "visual"]
 day1 = []
 day2 = []
 day3 = []
@@ -29,4 +30,7 @@ day9 = []
 day10 = []
 day11 = []
 day12 = []
+day13 = []
 basic = []
+debug = []
+visual = ["pancurses"]

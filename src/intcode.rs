@@ -51,42 +51,69 @@ impl Op {
             Self::Add => {
                 let arg1 = args[0].get(machine);
                 let arg2 = args[1].get(machine);
+                #[cfg(feature = "debug")]
+                println!(
+                    "ADD   {:5?}[{:5}]  {:5?}[{:5}]  {:5?}",
+                    args[0], arg1, args[1], arg2, args[2]
+                );
                 args[2].set(machine, arg1 + arg2);
                 (None, None)
             }
             Self::Mul => {
                 let arg1 = args[0].get(machine);
                 let arg2 = args[1].get(machine);
+                #[cfg(feature = "debug")]
+                println!(
+                    "MUL   {:5?}[{:5}]  {:5?}[{:5}]  {:5?}",
+                    args[0], arg1, args[1], arg2, args[2]
+                );
                 args[2].set(machine, arg1 * arg2);
                 (None, None)
             }
             Self::Read => {
                 let readed = input.next().await.unwrap();
+                #[cfg(feature = "debug")]
+                println!("READ  [{:5}] {:5?}", readed, args[0]);
                 args[0].set(machine, readed);
                 (None, None)
             }
             Self::Write => {
                 let writting = args[0].get(machine);
+                #[cfg(feature = "debug")]
+                println!("WRT   {:5?}[{:5}]", args[0], writting);
                 (None, Some(writting))
             }
             Self::JmpT => {
-                let new_pc = if args[0].get(machine) != 0 {
-                    Some(args[1].get(machine) as usize)
-                } else {
-                    None
-                };
+                let arg1 = args[0].get(machine);
+                let arg2 = args[1].get(machine);
+                #[cfg(feature = "debug")]
+                println!(
+                    "JMPT  {:5?}[{:5}]  {:5?}[{:5}]",
+                    args[0], arg1, args[1], arg2
+                );
+                let new_pc = if arg1 != 0 { Some(arg2 as usize) } else { None };
                 (new_pc, None)
             }
             Self::JmpF => {
-                let new_pc = if args[0].get(machine) == 0 {
-                    Some(args[1].get(machine) as usize)
-                } else {
-                    None
-                };
+                let arg1 = args[0].get(machine);
+                let arg2 = args[1].get(machine);
+                #[cfg(feature = "debug")]
+                println!(
+                    "JMPF  {:5?}[{:5}]  {:5?}[{:5}]",
+                    args[0], arg1, args[1], arg2
+                );
+                let new_pc = if arg1 == 0 { Some(arg2 as usize) } else { None };
                 (new_pc, None)
             }
             Self::Less => {
-                if args[0].get(machine) < args[1].get(machine) {
+                let arg1 = args[0].get(machine);
+                let arg2 = args[1].get(machine);
+                #[cfg(feature = "debug")]
+                println!(
+                    "LESS  {:5?}[{:5}]  {:5?}[{:5}]  {:5?}",
+                    args[0], arg1, args[1], arg2, args[2]
+                );
+                if arg1 < arg2 {
                     args[2].set(machine, 1);
                 } else {
                     args[2].set(machine, 0);
@@ -94,7 +121,14 @@ impl Op {
                 (None, None)
             }
             Self::Equal => {
-                if args[0].get(machine) == args[1].get(machine) {
+                let arg1 = args[0].get(machine);
+                let arg2 = args[1].get(machine);
+                #[cfg(feature = "debug")]
+                println!(
+                    "EQ    {:5?}[{:5}]  {:5?}[{:5}]  {:5?}",
+                    args[0], arg1, args[1], arg2, args[2]
+                );
+                if arg1 == arg2 {
                     args[2].set(machine, 1);
                 } else {
                     args[2].set(machine, 0);
@@ -103,6 +137,8 @@ impl Op {
             }
             Self::MoveBase => {
                 let arg = args[0].get(machine);
+                #[cfg(feature = "debug")]
+                println!("MVB   {:5?}[{:5}]", args[0], arg);
                 machine.relative_base += arg as isize;
                 (None, None)
             }
@@ -164,8 +200,12 @@ async fn handle_opcode<S: Stream<Item = i128> + Unpin>(
     input: &mut S,
 ) -> Option<(Option<i128>, usize)> {
     let mut opcode = machine.memory[pc];
+    #[cfg(feature = "debug")]
+    print!("{:4}: [{:5}] ", pc, opcode);
 
     if opcode == 99 {
+        #[cfg(feature = "debug")]
+        println!("EXIT");
         return None;
     }
 

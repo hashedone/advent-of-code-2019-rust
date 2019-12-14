@@ -55,6 +55,10 @@ mod day12;
 #[cfg(feature = "day12")]
 use day12 as day;
 
+mod day13;
+#[cfg(feature = "day13")]
+use day13 as day;
+
 #[cfg(not(feature = "basic"))]
 use day::extended as solution;
 #[cfg(feature = "basic")]
